@@ -28,7 +28,7 @@
     /* Main Card */
     .wrap{
       max-width:560px;
-      margin:22px auto 120px; /* ✅ balanced bottom */
+      margin:22px auto 120px; /* balanced */
       padding:18px;
       border-radius:22px;
       background:rgba(16,24,40,.78);
@@ -36,7 +36,7 @@
       box-shadow:0 18px 60px rgba(0,0,0,.55);
 
       position: relative;
-      padding-top: 100px;  /* timeDock safe space */
+      padding-top: 100px;
       padding-bottom: 18px;
     }
 
@@ -55,7 +55,7 @@
       width:80px;height:80px;border-radius:50%;
       border:2px solid #00ff66;
       overflow:hidden;
-      flex: 0 0 auto;
+      flex:0 0 auto;
     }
     .logoBox img{width:100%;height:100%;object-fit:cover}
 
@@ -71,12 +71,10 @@
     }
     textarea{min-height:140px}
 
-    /* msg colors */
     #msg{margin-top:10px;font-weight:700}
     .ok{color:#7cfc9a}
     .bad{color:#ff8a8a}
 
-    /* Button */
     button{
       width:100%;
       margin-top:16px;
@@ -92,60 +90,41 @@
     .socialBar{
       position:fixed;
       left:16px;
-      bottom:64px;  /* ✅ footer থেকে উপরে */
+      bottom:64px; /* footer থেকে উপরে */
       display:flex;
       gap:10px;
       z-index:60;
     }
 
     .socialBtn{
-      width:44px;
-      height:44px;
-      border-radius:14px;
-      display:grid;
-      place-items:center;
-      text-decoration:none;
+      width:44px;height:44px;border-radius:14px;
+      display:grid;place-items:center;text-decoration:none;
 
       background:rgba(16,24,40,.75);
       border:1px solid rgba(0,255,120,.22);
-
       box-shadow:
         0 12px 30px rgba(0,0,0,.45),
         0 0 0 6px rgba(0,255,120,.06);
-
       backdrop-filter:blur(10px);
       transition:transform .15s ease, filter .15s ease;
     }
 
-    .socialBtn:hover{
-      transform:translateY(-2px);
-      filter:brightness(1.07);
-    }
-
-    .socialBtn svg{
-      width:22px;
-      height:22px;
-      fill:#e8eefc;
-    }
+    .socialBtn:hover{transform:translateY(-2px);filter:brightness(1.07)}
+    .socialBtn svg{width:22px;height:22px;fill:#e8eefc}
 
     .socialBtn.fb{
       border-color: rgba(80,140,255,.55);
-      box-shadow:
-        0 12px 30px rgba(0,0,0,.45),
-        0 0 20px rgba(80,140,255,.18);
+      box-shadow: 0 12px 30px rgba(0,0,0,.45), 0 0 20px rgba(80,140,255,.18);
     }
     .socialBtn.tg{
       border-color: rgba(0,200,255,.55);
-      box-shadow:
-        0 12px 30px rgba(0,0,0,.45),
-        0 0 20px rgba(0,200,255,.18);
+      box-shadow: 0 12px 30px rgba(0,0,0,.45), 0 0 20px rgba(0,200,255,.18);
     }
 
-    /* Time (Top Left in wrap) */
+    /* Time */
     .timeDock{
       position:absolute;
-      left:14px;
-      top:14px;
+      left:14px; top:14px;
       width:140px;
       padding:10px;
       border-radius:14px;
@@ -154,28 +133,19 @@
 
       background:rgba(16,24,40,.78);
       border:1px solid rgba(0,255,120,.25);
-      box-shadow:
-        0 12px 30px rgba(0,0,0,.45),
-        0 0 0 6px rgba(0,255,120,.06);
+      box-shadow:0 12px 30px rgba(0,0,0,.45), 0 0 0 6px rgba(0,255,120,.06);
       backdrop-filter:blur(10px);
     }
 
     .timeDock .timeClock{
-      font-weight:800;
-      font-size:14px;
-      letter-spacing:.2px;
-      line-height: 1.2;
-      white-space: nowrap;
+      font-weight:800;font-size:14px;letter-spacing:.2px;line-height:1.2;
+      white-space:nowrap;
     }
-
     .timeDock .timeDate{
-      margin-top:4px;
-      font-size:12px;
-      opacity:.9;
-      white-space: nowrap;
+      margin-top:4px;font-size:12px;opacity:.9;white-space:nowrap;
     }
 
-    /* Footer (one line, no overlap) */
+    /* Footer */
     .siteFooter{
       position:fixed;
       bottom:10px;
@@ -184,9 +154,9 @@
       z-index:55;
       pointer-events:none;
 
-      width: min(560px, 95vw);
-      padding: 8px 12px;
-      border-radius: 12px;
+      width:min(560px, 95vw);
+      padding:8px 12px;
+      border-radius:12px;
 
       background: rgba(16,24,40,.55);
       border: 1px solid rgba(0,255,120,.18);
@@ -194,14 +164,16 @@
       box-shadow: 0 12px 30px rgba(0,0,0,.35);
     }
 
-    .siteFooter .footerLine{
-      display:block;
-      white-space:nowrap;       /* ✅ এক লাইন */
+    /* Desktop: static */
+    .footerTrack{
       overflow:hidden;
-      text-overflow:ellipsis;   /* ✅ ছোট হলে ... */
+      white-space:nowrap;
+      text-align:center;
       font-size:12px;
       color:#fff;
-      text-align:center;
+    }
+    .footerText{
+      display:inline-block;
     }
 
     /* Success Modal */
@@ -225,37 +197,22 @@
       border: 1px solid rgba(0,255,120,.22);
       box-shadow: 0 22px 60px rgba(0,0,0,.55);
     }
-
-    .modalText{
-      color: #e8eefc;
-      font-size: 14px;
-      line-height: 1.55;
-      margin-bottom: 14px;
-    }
-
+    .modalText{color:#e8eefc;font-size:14px;line-height:1.55;margin-bottom:14px}
     .modalBtn{
-      border: 0;
-      cursor: pointer;
-      padding: 10px 18px;
-      border-radius: 12px;
-      font-weight: 800;
-      color: #07110c;
-      background: linear-gradient(135deg,#00ff66,#00c8ff);
-      float: right;
+      border:0;cursor:pointer;padding:10px 18px;border-radius:12px;
+      font-weight:800;color:#07110c;background:linear-gradient(135deg,#00ff66,#00c8ff);
+      float:right;
     }
-    .modalBtn:hover{ filter: brightness(1.05); }
 
-    /* ✅ Mobile balanced */
+    /* ✅ Mobile */
     @media (max-width:480px){
-      /* ✅ খুব বেশি space না, আবার কমও না */
       .wrap{
-        margin: 14px auto 120px;   /* ✅ balanced */
+        margin: 14px auto 120px;
         padding-top: 110px;
       }
 
-      /* ✅ footer থেকে clear রাখতে social icons একটু উপরে */
       .socialBar{
-        bottom: 74px;              /* ✅ no overlap */
+        bottom: 74px; /* footer থেকে আলাদা */
         left: 12px;
       }
 
@@ -264,17 +221,27 @@
         width: 92vw;
       }
 
-      .siteFooter .footerLine{
+      /* ✅ মোবাইলে এক লাইনে full text দেখাতে marquee */
+      .footerTrack{
         font-size: 11px;
+        text-align: left;
       }
 
-      .topRow{ gap:12px; margin-top: 10px; }
-      h1{ font-size:22px; }
-      .timeDock{
-        left:12px;
-        top:12px;
-        width: 142px;
+      .footerText{
+        padding-left: 100%;
+        animation: footerMarquee 16s linear infinite;
       }
+
+      @keyframes footerMarquee{
+        0%   { transform: translateX(0); }
+        100% { transform: translateX(-100%); }
+      }
+    }
+
+    /* ✅ যারা motion কম চায় তাদের জন্য animation off */
+    @media (prefers-reduced-motion: reduce){
+      .footerText{ animation: none !important; padding-left: 0 !important; }
+      .footerTrack{ text-align:center; }
     }
   </style>
 </head>
@@ -346,7 +313,9 @@
   </div>
 
   <div class="siteFooter" aria-hidden="true">
-    <span class="footerLine">© 2026 Cyber Sentinel Bangladesh. All rights reserved. Developed by HEXER X NOVA</span>
+    <div class="footerTrack">
+      <span class="footerText">© 2026 Cyber Sentinel Bangladesh. All rights reserved. Developed by HEXER X NOVA</span>
+    </div>
   </div>
 
   <script>
