@@ -1,177 +1,624 @@
 <!doctype html>
 <html lang="bn">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CSB Agent Report Box</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CSB Agent Report Box</title>
 
-<style>
-*{box-sizing:border-box}
+  <style>
+    *{box-sizing:border-box}
 
-body{
-  margin:0;
-  min-height:100vh;
-  font-family:Arial,sans-serif;
-  color:#e8eefc;
-  background:radial-gradient(circle at 20% 15%,#0b1a2f,#04060a);
-  overflow-x:hidden;
-}
+    body{
+      margin:0;
+      min-height:100vh;
+      font-family:Arial,sans-serif;
+      color:#e8eefc;
+      background:radial-gradient(circle at 20% 15%,#0b1a2f,#04060a);
+      overflow-x:hidden;
+    }
 
-/* ================= MODAL ================= */
-.modalOverlay{
-  position:fixed;
-  inset:0;
-  display:none;
-  align-items:center;
-  justify-content:center;
-  background:rgba(0,0,0,.6);
-  backdrop-filter:blur(6px);
-  z-index:9999;
-  padding:14px;
-}
-.modalOverlay.show{display:flex}
+    #matrix{
+      position:fixed;
+      inset:0;
+      width:100%;
+      height:100%;
+      z-index:-2;
+    }
 
-.modalBox{
-  position:relative;
-  width:min(520px,95vw);
-  border-radius:18px;
-  padding:20px 18px 18px;
-  background:rgba(16,24,40,.95);
-  border:1px solid rgba(0,255,120,.25);
-  box-shadow:0 22px 60px rgba(0,0,0,.6);
-}
+    /* Main Card */
+    .wrap{
+      max-width:560px;
+      margin:22px auto 120px;
+      padding:18px;
+      border-radius:22px;
+      background:rgba(16,24,40,.78);
+      backdrop-filter:blur(10px);
+      box-shadow:0 18px 60px rgba(0,0,0,.55);
 
-/* ✕ CLOSE BUTTON */
-.modalClose{
-  position:absolute;
-  top:10px;
-  right:10px;
-  width:34px;
-  height:34px;
-  border-radius:50%;
-  border:1px solid rgba(0,255,120,.35);
-  background:rgba(16,24,40,.9);
-  color:#e8eefc;
-  font-size:22px;
-  cursor:pointer;
-  line-height:30px;
-  text-align:center;
-}
-.modalClose:hover{
-  color:#ff6b6b;
-  background:rgba(20,30,50,.95);
-}
+      position:relative;
+      padding-top:100px;
+      padding-bottom:18px;
+    }
 
-/* TEXT */
-.modalText{
-  font-size:14px;
-  line-height:1.6;
-}
-.modalText .line1{
-  font-weight:800;
-  margin-bottom:8px;
-}
-.modalText .line2{
-  margin-top:6px;
-  font-weight:800;
-  color:#ff6b6b;
-}
+    .topRow{
+      display:flex;
+      gap:16px;
+      margin-top:20px;
+    }
 
-/* JOIN BUTTON */
-.joinBtn{
-  margin-top:16px;
-  width:100%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:10px;
-  padding:13px;
-  border-radius:16px;
-  font-weight:900;
-  text-decoration:none;
-  color:#07110c;
-  background:linear-gradient(135deg,#00ff66,#00c8ff);
-}
-.joinBtn svg{
-  width:20px;
-  height:20px;
-  fill:#07110c;
-}
-.joinBtn:hover{filter:brightness(1.05)}
+    .leftText{flex:1}
+    h1{margin:0;font-size:26px}
+    .sub{opacity:.9}
 
-@media(max-width:480px){
-  .modalText{font-size:13px}
-}
-</style>
+    /* Logo */
+    .logoBox{
+      width:80px;height:80px;border-radius:50%;
+      border:2px solid #00ff66;
+      overflow:hidden;
+      flex:0 0 auto;
+    }
+    .logoBox img{width:100%;height:100%;object-fit:cover}
+
+    /* Form */
+    input,textarea{
+      width:100%;
+      margin-top:12px;
+      padding:13px;
+      border-radius:14px;
+      background:#0b1220;
+      color:#fff;
+      border:1px solid #263454;
+    }
+    textarea{min-height:140px}
+
+    small.hint{display:block;margin-top:12px;opacity:.9}
+    small.hint.red{color:#ff8a8a;opacity:1}
+
+    /* msg colors */
+    #msg{margin-top:10px;font-weight:700}
+    .ok{color:#7cfc9a}
+    .bad{color:#ff8a8a}
+
+    /* Button */
+    button{
+      width:100%;
+      margin-top:16px;
+      padding:14px;
+      border-radius:16px;
+      font-weight:800;
+      background:linear-gradient(135deg,#00ff66,#00c8ff);
+      border:0;
+      cursor:pointer;
+    }
+
+    /* Social */
+    .socialBar{
+      position:fixed;
+      left:16px;
+      bottom:74px;          /* ✅ footer থেকে আলাদা */
+      display:flex;
+      gap:10px;
+      z-index:60;
+    }
+
+    .socialBtn{
+      width:44px;height:44px;border-radius:14px;
+      display:grid;place-items:center;text-decoration:none;
+
+      background:rgba(16,24,40,.75);
+      border:1px solid rgba(0,255,120,.22);
+
+      box-shadow:
+        0 12px 30px rgba(0,0,0,.45),
+        0 0 0 6px rgba(0,255,120,.06);
+
+      backdrop-filter:blur(10px);
+      transition:transform .15s ease, filter .15s ease;
+    }
+    .socialBtn:hover{transform:translateY(-2px);filter:brightness(1.07)}
+    .socialBtn svg{width:22px;height:22px;fill:#e8eefc}
+
+    .socialBtn.fb{
+      border-color: rgba(80,140,255,.55);
+      box-shadow:
+        0 12px 30px rgba(0,0,0,.45),
+        0 0 20px rgba(80,140,255,.18);
+    }
+    .socialBtn.tg{
+      border-color: rgba(0,200,255,.55);
+      box-shadow:
+        0 12px 30px rgba(0,0,0,.45),
+        0 0 20px rgba(0,200,255,.18);
+    }
+
+    /* Time */
+    .timeDock{
+      position:absolute;
+      left:14px;
+      top:14px;
+      width:140px;
+      padding:10px;
+      border-radius:14px;
+      text-align:center;
+      z-index:5;
+
+      background:rgba(16,24,40,.78);
+      border:1px solid rgba(0,255,120,.25);
+      box-shadow:
+        0 12px 30px rgba(0,0,0,.45),
+        0 0 0 6px rgba(0,255,120,.06);
+      backdrop-filter:blur(10px);
+    }
+
+    .timeDock .timeClock{
+      font-weight:800;
+      font-size:14px;
+      letter-spacing:.2px;
+      line-height:1.2;
+      white-space:nowrap;
+    }
+    .timeDock .timeDate{
+      margin-top:4px;
+      font-size:12px;
+      opacity:.9;
+      white-space:nowrap;
+    }
+
+    /* Footer */
+    .siteFooter{
+      position:fixed;
+      bottom:12px;
+      left:50%;
+      transform:translateX(-50%);
+      z-index:55;
+      pointer-events:none;
+
+      width:min(560px, 95vw);
+      padding:8px 12px;
+      border-radius:12px;
+
+      background: rgba(16,24,40,.55);
+      border: 1px solid rgba(0,255,120,.18);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 12px 30px rgba(0,0,0,.35);
+    }
+
+    .footerTrack{
+      overflow:hidden;
+      white-space:nowrap;
+      font-size:12px;
+      color:#fff;
+      text-align:center;
+    }
+    .footerText{display:inline-block}
+
+    /* মোবাইলে Developed by দেখা যাবে (Marquee) */
+    @media (max-width:480px){
+      .wrap{ margin:14px auto 120px; padding-top:110px; }
+      .socialBar{ left:12px; bottom:74px; }
+      .siteFooter{ width:92vw; }
+      .footerTrack{ font-size:11px; text-align:left; }
+      .footerText{
+        padding-left:100%;
+        animation: footerMarquee 16s linear infinite;
+      }
+      @keyframes footerMarquee{
+        0%{transform:translateX(0)}
+        100%{transform:translateX(-100%)}
+      }
+      h1{font-size:22px}
+      .topRow{gap:12px;margin-top:10px}
+      .timeDock{left:12px;top:12px;width:142px}
+    }
+    @media (prefers-reduced-motion: reduce){
+      .footerText{animation:none !important; padding-left:0 !important;}
+      .footerTrack{text-align:center;}
+    }
+
+    /* =========================
+       ✅ Success Modal (Updated)
+       ========================= */
+    .modalOverlay{
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      background: rgba(0,0,0,.60);
+      backdrop-filter: blur(6px);
+      padding:14px;
+    }
+
+    .modalOverlay.show{
+      display: flex;
+    }
+
+    .modalBox{
+      position:relative;
+      width: min(520px, 92vw);
+      border-radius: 18px;
+      padding: 20px 18px 18px;
+      background: rgba(16,24,40,.95);
+      border: 1px solid rgba(0,255,120,.22);
+      box-shadow: 0 22px 60px rgba(0,0,0,.60);
+    }
+
+    /* ✕ close button */
+    .modalClose{
+      position:absolute;
+      top:10px;
+      right:10px;
+      width:34px;
+      height:34px;
+      border-radius:50%;
+      border:1px solid rgba(0,255,120,.35);
+      background:rgba(16,24,40,.9);
+      color:#e8eefc;
+      font-size:22px;
+      cursor:pointer;
+      line-height:30px;
+      text-align:center;
+    }
+    .modalClose:hover{
+      color:#ff6b6b;
+      background:rgba(20,30,50,.95);
+    }
+
+    .modalText{
+      color:#e8eefc;
+      font-size:14px;
+      line-height:1.6;
+    }
+    .modalText .line1{
+      font-weight:800;
+      margin-bottom:8px;
+    }
+    .modalText .line2{
+      margin-top:6px;
+      font-weight:800;
+      color:#ff6b6b;
+    }
+
+    /* Join Here button */
+    .joinBtn{
+      margin-top:16px;
+      width:100%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      padding:13px;
+      border-radius:16px;
+      font-weight:900;
+      text-decoration:none;
+      color:#07110c;
+      background:linear-gradient(135deg,#00ff66,#00c8ff);
+    }
+    .joinBtn svg{width:20px;height:20px;fill:#07110c}
+    .joinBtn:hover{filter:brightness(1.05)}
+    @media (max-width:480px){ .modalText{font-size:13px} }
+  </style>
 </head>
 
 <body>
 
-<!-- ===== SUCCESS MODAL ===== -->
-<div class="modalOverlay" id="successModal" aria-hidden="true">
-  <div class="modalBox">
+  <!-- MATRIX BACKGROUND -->
+  <canvas id="matrix"></canvas>
 
-    <!-- ✕ Close -->
-    <button class="modalClose" id="modalCloseBtn" aria-label="Close">&times;</button>
+  <div class="wrap">
 
-    <!-- Text -->
-    <div class="modalText">
-      <div class="line1">
-        আপনার রিপোর্ট গ্রহণ করা হয়েছে। ৭২ ঘণ্টার মধ্যে ইমেইলে কনফার্মেশন মেসেজ পাঠানো হবে
+    <!-- Time -->
+    <div class="timeDock">
+      <div class="timeClock" id="timeClock">--:--:--</div>
+      <div class="timeDate" id="timeDate">--/--/----</div>
+    </div>
+
+    <div class="topRow">
+      <div class="leftText">
+        <h1>CSB Agent Report Box</h1>
+        <p class="sub">এখানে CSB Agent সম্পর্কিত অভিযোগ/রিপোর্ট জমা দিন।</p>
       </div>
-      <div class="line2">
-        🔴 জরুরি প্রয়োজনে নিচের Join Here বাটনে ক্লিক করুন
+
+      <div class="logoBox">
+        <img src="logo.png" alt="CSB Logo" />
       </div>
     </div>
 
-    <!-- Join Button -->
-    <a class="joinBtn" id="joinHereBtn" href="#" target="_blank">
-      <svg viewBox="0 0 24 24">
-        <path d="M21.9 4.6c.2.1.2.4.2.6l-3.1 14.7c-.2.9-1.1 1.2-1.9.8l-4.9-3.6-2.4 2.3c-.2.2-.4.3-.7.3l.4-5.6 10.2-9.2c.2-.2 0-.3-.2-.2L7.2 12.2 2.8 10.8c-.9-.3-.9-1.5.1-1.9L20.7 4c.5-.2.9-.2 1.2-.1z"/>
+    <form id="complaintForm">
+      <input type="text" id="name" placeholder="আপনার আসল নাম" />
+      <input type="text" id="contact" placeholder="আপনার Gmail দিন" />
+      <input type="text" id="agent" placeholder="আপনার FB / Telegram Agent ID দিন" />
+      <input type="text" id="complainer" placeholder="অভিযুক্ত ব্যক্তির FB / Telegram Agent ID দিন" />
+
+      <small class="hint">▸ প্রমাণ হিসেবে Screenshot দিন</small>
+      <input type="file" id="proof" accept="image/*" />
+      <small class="hint red">⚠️ শুধু ছবি (image) দিন, সর্বোচ্চ 10MB</small>
+
+      <input type="text" id="subject" placeholder="অভিযোগের বিষয়" required />
+      <textarea id="details" placeholder="অভিযোগ বিস্তারিত লিখুন..." required></textarea>
+
+      <button type="submit" id="btn">Submit Report</button>
+      <div id="msg"></div>
+    </form>
+  </div>
+
+  <!-- ✅ UPDATED SUCCESS MODAL -->
+  <div class="modalOverlay" id="successModal" aria-hidden="true">
+    <div class="modalBox" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+
+      <button class="modalClose" id="modalCloseBtn" aria-label="Close">&times;</button>
+
+      <div class="modalText" id="modalTitle">
+        <div class="line1">
+          আপনার রিপোর্ট গ্রহণ করা হয়েছে। ৭২ ঘণ্টার মধ্যে ইমেইলে কনফার্মেশন মেসেজ পাঠানো হবে
+        </div>
+        <div class="line2">
+          🔴 জরুরি প্রয়োজনে নিচের Join Here বাটনে ক্লিক করুন
+        </div>
+      </div>
+
+      <a class="joinBtn" id="joinHereBtn" href="#" target="_blank" rel="noopener noreferrer">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M21.9 4.6c.2.1.2.4.2.6l-3.1 14.7c-.2.9-1.1 1.2-1.9.8l-4.9-3.6-2.4 2.3c-.2.2-.4.3-.7.3l.4-5.6 10.2-9.2c.2-.2 0-.3-.2-.2L7.2 12.2 2.8 10.8c-.9-.3-.9-1.5.1-1.9L20.7 4c.5-.2.9-.2 1.2-.1z"/>
+        </svg>
+        Join Here
+      </a>
+
+    </div>
+  </div>
+
+  <!-- Social (Bottom Left) -->
+  <div class="socialBar">
+    <a class="socialBtn fb"
+       href="https://www.facebook.com/CyberSentinelBangladesh"
+       target="_blank"
+       rel="noopener noreferrer"
+       title="Facebook"
+       aria-label="Facebook">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M22 12a10 10 0 1 0-11.6 9.9v-7H8v-3h2.4V9.6c0-2.4 1.4-3.8 3.6-3.8 1 0 2 .2 2 .2v2.2h-1.1c-1.1 0-1.4.7-1.4 1.4V12H18l-.6 3h-2.9v7A10 10 0 0 0 22 12z"/>
       </svg>
-      Join Here
     </a>
 
+    <a class="socialBtn tg"
+       href="https://t.me/+GtSCf-U5YW5kMmI1"
+       target="_blank"
+       rel="noopener noreferrer"
+       title="Telegram"
+       aria-label="Telegram">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M21.9 4.6c.2.1.2.4.2.6l-3.1 14.7c-.2.9-1.1 1.2-1.9.8l-4.9-3.6-2.4 2.3c-.2.2-.4.3-.7.3l.4-5.6 10.2-9.2c.2-.2 0-.3-.2-.2L7.2 12.2 2.8 10.8c-.9-.3-.9-1.5.1-1.9L20.7 4c.5-.2.9-.2 1.2-.1z"/>
+      </svg>
+    </a>
   </div>
-</div>
 
-<script>
-/* ================= CONFIG ================= */
-const TELEGRAM_JOIN_LINK = "https://t.me/your_group_link_here"; // 🔥 এখানে তোমার গ্রুপ লিংক বসাও
+  <!-- Footer -->
+  <div class="siteFooter" aria-hidden="true">
+    <div class="footerTrack">
+      <span class="footerText">© 2026 Cyber Sentinel Bangladesh. All rights reserved. Developed by HEXER X NOVA</span>
+    </div>
+  </div>
 
-document.getElementById("joinHereBtn").href = TELEGRAM_JOIN_LINK;
+  <script>
+    // =========================
+    // ✅ Join Here Link (এখানে তোমার গ্রুপ লিংক বসাও)
+    // =========================
+    const TELEGRAM_JOIN_LINK = "https://t.me/your_group_link_here";
+    const joinBtn = document.getElementById("joinHereBtn");
+    if (joinBtn) joinBtn.href = TELEGRAM_JOIN_LINK;
 
-/* ================= MODAL CONTROL ================= */
-const modal = document.getElementById("successModal");
-const closeBtn = document.getElementById("modalCloseBtn");
+    // =========================
+    // MATRIX BACKGROUND
+    // =========================
+    const canvas = document.getElementById("matrix");
+    const ctx = canvas.getContext("2d");
 
-/* open modal (call this after submit success) */
-function openSuccessModal(){
-  modal.classList.add("show");
-  modal.setAttribute("aria-hidden","false");
-}
+    function resizeCanvas(){
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resizeCanvas();
 
-/* close modal */
-function closeSuccessModal(){
-  modal.classList.remove("show");
-  modal.setAttribute("aria-hidden","true");
-}
+    const letters = "アカサタナハマヤラワ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const fontSize = 14;
+    let columns = Math.floor(canvas.width / fontSize);
+    let drops = Array(columns).fill(1);
 
-closeBtn.onclick = closeSuccessModal;
+    function drawMatrix(){
+      ctx.fillStyle = "rgba(0,0,0,0.05)";
+      ctx.fillRect(0,0,canvas.width,canvas.height);
 
-/* click outside */
-modal.onclick = (e)=>{
-  if(e.target === modal) closeSuccessModal();
-};
+      ctx.fillStyle = "#00ff66";
+      ctx.font = fontSize + "px monospace";
 
-/* ESC key */
-document.addEventListener("keydown",(e)=>{
-  if(e.key === "Escape") closeSuccessModal();
-});
+      for(let i=0;i<drops.length;i++){
+        const text = letters.charAt(Math.floor(Math.random()*letters.length));
+        ctx.fillText(text, i*fontSize, drops[i]*fontSize);
 
-/* 🔧 DEMO AUTO OPEN (remove later) */
-setTimeout(openSuccessModal, 800);
-</script>
+        if(drops[i]*fontSize > canvas.height && Math.random()>0.975){
+          drops[i]=0;
+        }
+        drops[i]++;
+      }
+    }
+    setInterval(drawMatrix, 40);
 
+    window.addEventListener("resize", () => {
+      resizeCanvas();
+      columns = Math.floor(canvas.width / fontSize);
+      drops = Array(columns).fill(1);
+    });
+
+    // =========================
+    // Live Time (BD)
+    // =========================
+    function startClockBD() {
+      const timeEl = document.getElementById("timeClock");
+      const dateEl = document.getElementById("timeDate");
+      if (!timeEl || !dateEl) return;
+
+      const timeFmt = new Intl.DateTimeFormat("en-GB", {
+        timeZone: "Asia/Dhaka",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: true
+      });
+
+      const dateFmt = new Intl.DateTimeFormat("en-GB", {
+        timeZone: "Asia/Dhaka",
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric"
+      });
+
+      function tick() {
+        const now = new Date();
+        timeEl.textContent = timeFmt.format(now);
+        dateEl.textContent = dateFmt.format(now);
+      }
+
+      tick();
+      setInterval(tick, 1000);
+    }
+    document.addEventListener("DOMContentLoaded", startClockBD);
+
+    // =========================
+    // ✅ Modal controls
+    // =========================
+    const successModal = document.getElementById("successModal");
+    const modalCloseBtn = document.getElementById("modalCloseBtn");
+
+    function openSuccessModal(){
+      if (!successModal) return;
+      successModal.classList.add("show");
+      successModal.setAttribute("aria-hidden","false");
+      modalCloseBtn?.focus?.();
+    }
+
+    function closeSuccessModal(){
+      if (!successModal) return;
+      successModal.classList.remove("show");
+      successModal.setAttribute("aria-hidden","true");
+    }
+
+    // close: ✕
+    if (modalCloseBtn) modalCloseBtn.onclick = closeSuccessModal;
+
+    // close: outside click
+    if (successModal){
+      successModal.onclick = (e) => {
+        if (e.target === successModal) closeSuccessModal();
+      };
+    }
+
+    // close: ESC
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") closeSuccessModal();
+    });
+
+    // =========================
+    // Form Submit (Protected)
+    // =========================
+    const form = document.getElementById("complaintForm");
+    const msg = document.getElementById("msg");
+    const btn = document.getElementById("btn");
+
+    let submitting = false;
+
+    const MAX_MB = 10;
+    const MAX_BYTES = MAX_MB * 1024 * 1024;
+
+    function showMsg(text, type) {
+      if (!msg) return;
+      msg.textContent = text || "";
+      msg.className = type || "";
+    }
+
+    function fileToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const r = new FileReader();
+        r.onload = () => resolve(String(r.result).split(",")[1]);
+        r.onerror = reject;
+        r.readAsDataURL(file);
+      });
+    }
+
+    if (form) {
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        if (submitting) return;
+        submitting = true;
+
+        showMsg("", "");
+        btn.disabled = true;
+        btn.textContent = "Sending...";
+
+        try {
+          const elName = document.getElementById("name");
+          const elContact = document.getElementById("contact");
+          const elAgent = document.getElementById("agent");
+          const elComplainer = document.getElementById("complainer");
+          const elSubject = document.getElementById("subject");
+          const elDetails = document.getElementById("details");
+          const proofInput = document.getElementById("proof");
+
+          const proofFile = proofInput?.files?.[0];
+          let proofBase64 = null, proofMime = null, proofName = null;
+
+          if (proofFile) {
+            if (!proofFile.type.startsWith("image/")) {
+              showMsg("❌ শুধু ছবি (image) আপলোড দিন", "bad");
+              return;
+            }
+            if (proofFile.size > MAX_BYTES) {
+              showMsg(`❌ ছবি ${MAX_MB}MB এর কম হতে হবে`, "bad");
+              return;
+            }
+            proofMime = proofFile.type;
+            proofName = proofFile.name;
+            proofBase64 = await fileToBase64(proofFile);
+          }
+
+          const payload = {
+            name: (elName?.value || "").trim(),
+            contact: (elContact?.value || "").trim(),
+            agent: (elAgent?.value || "").trim(),
+            complainer: (elComplainer?.value || "").trim(),
+            subject: (elSubject?.value || "").trim(),
+            details: (elDetails?.value || "").trim(),
+            proofBase64,
+            proofMime,
+            proofName
+          };
+
+          const res = await fetch("/api/submit", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+          });
+
+          const data = await res.json().catch(() => ({}));
+
+          if (!res.ok) {
+            const tgDesc = data?.data?.description ? ` (${data.data.description})` : "";
+            showMsg(`❌ ${data?.error || "Error হয়েছে"}${tgDesc}`, "bad");
+            return;
+          }
+
+          // ✅ SUCCESS
+          form.reset();
+          openSuccessModal();
+        } catch (err) {
+          showMsg("❌ Network / API error", "bad");
+        } finally {
+          submitting = false;
+          btn.disabled = false;
+          btn.textContent = "Submit Report";
+        }
+      });
+    }
+  </script>
 </body>
 </html>
